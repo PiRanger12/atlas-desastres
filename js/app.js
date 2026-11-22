@@ -11,20 +11,22 @@ const TYPES={sismo:["Terremoto","#c0392b"],tsunami:["Tsunami","#1f6fb2"],volcan:
 const svg=d3.select('#map'),fig=document.getElementById('fig'),tip=document.getElementById('tip');
 const countries=topojson.feature(TOPO,TOPO.objects.countries).features;
 const proj=d3.geoNaturalEarth1(),path=d3.geoPath(proj);
-const g=svg.append('g'),gc=g.append('g'),gd=g.append('g');
+const g=svg.append('g'),gc=g.append('g'),gs=g.append('g'),gd=g.append('g');
 const rScale=d3.scaleSqrt().domain([0,2000000]).range([3.5,26]);
-const st={reg:null,pick:null,sort:'y',on:new Set(Object.keys(TYPES))};
+const st={reg:null,pick:null,sort:'y',on:new Set(Object.keys(TYPES)),mg:false,mgLoad:false,mgErr:null,station:null,mpick:null};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let STATIONS=[];const MG_COLOR='#0b4f8a';
 let k=1;
 
 const cs=gc.selectAll('path').data(countries).join('path').attr('class','c')
  .on('mouseenter',(e,f)=>{cs.classed('hov',c=>c.properties.r===f.properties.r);showTip(e,`<b>${f.properties.n}</b><br>${REG[f.properties.r]}`)})
  .on('mousemove',moveTip).on('mouseleave',()=>{cs.classed('hov',false);hideTip()})
- .on('click',(e,f)=>{st.pick=null;select(f.properties.r)});
+ .on('click',(e,f)=>{st.pick=null;st.station=null;renderStations();select(f.properties.r)});
 
 function draw(){
   const W=fig.clientWidth,H=fig.clientHeight;
   proj.fitExtent([[10,10],[W-10,H-10]],{type:'FeatureCollection',features:countries});
-  cs.attr('d',path);renderDots();
+  cs.attr('d',path);renderStations();renderDots();
 }
 function renderDots(){
   const data=D.filter(d=>st.on.has(d.t)).sort((a,b)=>b.m-a.m);
@@ -34,28 +36,80 @@ function renderDots(){
    .attr('fill',d=>TYPES[d.t][1]).classed('pick',d=>d.id===st.pick)
    .on('mouseenter',(e,d)=>showTip(e,`<b>${d.n}</b> (${yr(d.y)})<br>${d.p}<br>Muertes: ${d.d}`))
    .on('mousemove',moveTip).on('mouseleave',hideTip)
-   .on('click',(e,d)=>{e.stopPropagation();st.pick=d.id;select(d.r,true)});
+   .on('click',(e,d)=>{e.stopPropagation();st.pick=d.id;st.station=null;renderStations();select(d.r,true)});
+}
+// Capa de estaciones mareográficas (API NOAA Hazel)
+const tri=d3.symbol(d3.symbolTriangle);
+function renderStations(){
+  const data=st.mg?STATIONS:[];
+  gs.selectAll('path').data(data,d=>d.key).join('path').attr('class','st')
+   .attr('d',d=>tri.size(28+Math.sqrt(d.items.length)*14)())
+   .attr('transform',d=>{const [x,y]=proj([d.lon,d.lat]);return `translate(${x},${y}) scale(${1/Math.sqrt(k)})`})
+   .attr('fill',MG_COLOR).classed('pick',d=>d.key===st.station)
+   .on('mouseenter',(e,d)=>showTip(e,`<b>${esc(d.name)}</b><br>Estación mareográfica · ${d.items.length} mareograma${d.items.length>1?'s':''}<br>${d.y0}–${d.y1}`))
+   .on('mousemove',moveTip).on('mouseleave',hideTip)
+   .on('click',(e,d)=>{e.stopPropagation();st.station=d.key;st.mpick=null;renderStations();renderPanel();list.scrollTop=0});
+}
+async function loadMarigrams(){
+  if(STATIONS.length||st.mgLoad)return;
+  st.mgLoad=true;st.mgErr=null;updateMgChip();
+  try{
+    const items=await NOAA.marigrams(),by=new Map();
+    for(const m of items){const key=m.locationName+'|'+m.latitude+'|'+m.longitude;
+      if(!by.has(key))by.set(key,{key,name:m.locationName,country:m.country,lat:m.latitude,lon:m.longitude,items:[]});
+      by.get(key).items.push(m)}
+    STATIONS=[...by.values()].map(s=>{s.items.sort((a,b)=>a.year-b.year||a.month-b.month||a.day-b.day);s.y0=s.items[0].year;s.y1=s.items.at(-1).year;return s})
+      .sort((a,b)=>b.items.length-a.items.length);
+  }catch(e){st.mgErr=e;console.error(e)}
+  st.mgLoad=false;updateMgChip();renderStations();
+}
+const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const fecha=m=>[m.day,m.month?MES[m.month-1]:null,m.year].filter(Boolean).join(' ');
+const mb=b=>b>=1e6?(b/1e6).toFixed(0)+' MB':Math.round(b/1e3)+' kB';
+function stationPanel(){
+  const s=STATIONS.find(s=>s.key===st.station);
+  ph.innerHTML=`<h2>${esc(s.name)}</h2><p>Estación mareográfica · ${esc(s.country)} · ${s.items.length} mareograma${s.items.length>1?'s':''} (${s.y0}–${s.y1})</p>
+   <div class="sort"><button data-s="b" aria-pressed="false">← Volver</button></div>`;
+  list.innerHTML=s.items.map(m=>{const open=m.id===st.mpick,img=m.plotPreview||m.scanPreview;
+    return `<li data-mid="${m.id}" style="--t:${MG_COLOR}" class="${open?'pick':''}">
+    <h3>Tsunami del ${fecha(m)}</h3><div class="meta"><span>Evento NOAA #${m.tsunamiEventId}</span>${m.csv?'<span>Digitalizado</span>':''}${img?'':'<span>Sin imagen</span>'}</div>
+    ${open?`<div class="mg">${img?`<a href="${esc(img)}" target="_blank" rel="noopener"><img src="${esc(img)}" alt="Mareograma de ${esc(s.name)}, ${fecha(m)}" loading="lazy"></a>`:''}
+      <div class="ev" id="ev${m.id}">Cargando datos del evento…</div>
+      <div class="links">${m.scan?`<a href="${esc(m.scan)}">Escaneo ZIP (${mb(m.scanSize)})</a>`:''}${m.csv?`<a href="${esc(m.csv)}">CSV</a>`:''}${m.netcdf?`<a href="${esc(m.netcdf)}">NetCDF</a>`:''}${m.reference?`<a href="${esc(m.reference)}" target="_blank" rel="noopener">DOI</a>`:''}<a href="${NOAA.eventPage(m.tsunamiEventId)}" target="_blank" rel="noopener">Ficha del evento ↗</a></div></div>`:''}</li>`}).join('');
+  const m=s.items.find(m=>m.id===st.mpick);
+  if(m)NOAA.event(m.tsunamiEventId).then(ev=>{const el=document.getElementById('ev'+m.id);if(!el)return;
+    const mag=ev.eqMagMw??ev.eqMagMs??ev.eqMagUnk??ev.eqMagMb,dead=ev.deathsTotal??ev.deaths;
+    el.innerHTML=[`<b>Origen:</b> ${esc(ev.locationName)}${ev.country?', '+esc(ev.country):''}`,mag!=null?`<b>Magnitud del sismo:</b> ${mag}`:'',
+      ev.maxWaterHeight!=null?`<b>Altura máx. del agua:</b> ${ev.maxWaterHeight} m`:'',dead?`<b>Muertes:</b> ${fmt(dead)}`:'',
+      ev.comments?`<span class="cm">${esc(ev.comments)}</span>`:''].filter(Boolean).join('<br>')})
+   .catch(()=>{const el=document.getElementById('ev'+m.id);if(el)el.textContent='No se pudo cargar el evento.'});
 }
 const yr=y=>y<1000?y+' d. C.':y;
 function showTip(e,h){tip.innerHTML=h;tip.style.display='block';moveTip(e)}
 function moveTip(e){const b=fig.getBoundingClientRect();let x=e.clientX-b.left+14,y=e.clientY-b.top+14;if(x>b.width-250)x-=260;tip.style.left=x+'px';tip.style.top=y+'px'}
 function hideTip(){tip.style.display='none'}
 
-const zoom=d3.zoom().scaleExtent([1,8]).on('zoom',e=>{k=e.transform.k;g.attr('transform',e.transform);gc.selectAll('path').attr('stroke-width',.5/k);renderDots()});
+const zoom=d3.zoom().scaleExtent([1,8]).on('zoom',e=>{k=e.transform.k;g.attr('transform',e.transform);gc.selectAll('path').attr('stroke-width',.5/k);renderStations();renderDots()});
 svg.call(zoom);
 document.getElementById('zin').onclick=()=>svg.transition().call(zoom.scaleBy,1.6);
 document.getElementById('zout').onclick=()=>svg.transition().call(zoom.scaleBy,1/1.6);
 document.getElementById('zre').onclick=()=>svg.transition().call(zoom.transform,d3.zoomIdentity);
 
 const chips=document.getElementById('chips');
-chips.innerHTML=Object.entries(TYPES).map(([k,[n,c]])=>`<button class="chip" data-t="${k}" aria-pressed="true"><i style="background:${c}"></i>${n}</button>`).join('');
-chips.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const t=b.dataset.t;
+chips.innerHTML=Object.entries(TYPES).map(([k,[n,c]])=>`<button class="chip" data-t="${k}" aria-pressed="true"><i style="background:${c}"></i>${n}</button>`).join('')
+  +`<button class="chip layer" id="mgchip" aria-pressed="false" title="Estaciones con registros de mareógrafo (API NOAA/NCEI)"><i class="tri" style="background:${MG_COLOR}"></i><span>Mareogramas NOAA</span></button>`;
+const mgchip=document.getElementById('mgchip');
+function updateMgChip(){mgchip.setAttribute('aria-pressed',st.mg);mgchip.querySelector('span').textContent=st.mgLoad?'Cargando mareogramas…':st.mgErr?'Mareogramas NOAA (error, reintentar)':STATIONS.length?`Mareogramas NOAA · ${STATIONS.length} estaciones`:'Mareogramas NOAA'}
+chips.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;
+  if(b===mgchip){st.mg=!st.mg;if(!st.mg&&st.station){st.station=null;renderPanel()}updateMgChip();renderStations();if(st.mg)loadMarigrams();return}
+  const t=b.dataset.t;
   st.on.has(t)?st.on.delete(t):st.on.add(t);b.setAttribute('aria-pressed',st.on.has(t));renderDots();renderPanel()};
 
 const ph=document.getElementById('ph'),list=document.getElementById('list');
 function select(r,scroll){st.reg=r;cs.classed('on',c=>c.properties.r===r);renderDots();renderPanel(scroll)}
 const fmt=n=>n.toLocaleString('es-MX');
 function renderPanel(scroll){
+  if(st.station){stationPanel();return}
   if(!st.reg){
     ph.innerHTML=`<h2>Elige una región</h2><p>${D.length} desastres en ${Object.keys(REG).length} regiones. Haz clic en el mapa o en una región:</p>`;
     list.innerHTML=`<li style="all:unset;display:block"><div class="regs">${Object.entries(REG).map(([k,n])=>`<button data-r="${k}">${n}</button>`).join('')}</div></li>`;
@@ -71,9 +125,12 @@ function renderPanel(scroll){
   if(scroll){const el=list.querySelector('.pick');el&&el.scrollIntoView({block:'nearest',behavior:'smooth'})}
 }
 ph.onclick=e=>{const b=e.target.closest('[data-s]');if(!b)return;
+  if(b.dataset.s==='b'){st.station=null;st.mpick=null;renderStations();renderPanel();return}
   if(b.dataset.s==='x'){st.reg=null;st.pick=null;cs.classed('on',false);renderDots();renderPanel();return}
   st.sort=b.dataset.s;renderPanel()};
-list.onclick=e=>{const r=e.target.closest('[data-r]');if(r){select(r.dataset.r);return}
+list.onclick=e=>{if(e.target.closest('a'))return;
+  const mi=e.target.closest('li[data-mid]');if(mi){const id=+mi.dataset.mid;st.mpick=st.mpick===id?null:id;renderPanel();return}
+  const r=e.target.closest('[data-r]');if(r){select(r.dataset.r);return}
   const li=e.target.closest('li[data-id]');if(!li)return;const id=+li.dataset.id;st.pick=st.pick===id?null:id;renderDots();renderPanel()};
 
 const ro=new ResizeObserver(draw);ro.observe(fig);
