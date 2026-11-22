@@ -1,0 +1,15 @@
+{
+  "name": "atlas-desastres",
+  "version": "1.0.0",
+  "description": "Mapa mundial interactivo de desastres históricos por región",
+  "private": true,
+  "scripts": {
+    "build:geo": "node scripts/build-geo.js",
+    "start": "npx --yes serve ."
+  },
+  "devDependencies": {
+    "world-atlas": "^2.0.2",
+    "world-countries": "^5.0.0"
+  },
+  "license": "MIT"
+}

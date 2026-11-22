@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atlas de desastres históricos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header>
+<h1>Atlas de desastres históricos</h1>
+<p class="lead">Haz clic en cualquier país para ver los desastres más significativos de su región. Cada punto es un evento; su tamaño refleja el número estimado de muertes.</p>
+</header>
+<main>
+<div class="mapbox">
+  <div class="fig" id="fig"><svg id="map" role="img" aria-label="Mapamundi por regiones"></svg>
+    <div class="tip" id="tip"></div>
+    <div class="zoom"><button id="zin" aria-label="Acercar">+</button><button id="zout" aria-label="Alejar">−</button><button id="zre" aria-label="Restablecer vista">⟲</button></div>
+  </div>
+  <div class="chips" id="chips"></div>
+</div>
+<aside>
+  <div class="ph" id="ph"></div>
+  <ol id="list"></ol>
+</aside>
+</main>
+<footer>Cifras aproximadas; pendientes de verificar contra fuentes como EM-DAT o NOAA; para varios eventos antiguos las estimaciones varían mucho. Base cartográfica: Natural Earth (world-atlas).</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
