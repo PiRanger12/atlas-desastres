@@ -63,3 +63,12 @@ footer{max-width:1440px;margin:auto;padding:0 max(4vw,16px) 32px;font-size:13px;
 .mg .ev{color:var(--ink);margin-bottom:8px}.mg .cm{color:var(--mute)}
 .links{display:flex;flex-wrap:wrap;gap:6px 14px}
 .links a,footer a{color:var(--acc)}
+
+/* Globo 3D */
+:root{--sead:light-dark(#b9c4cd,#0f151a);--space:light-dark(#e9ebee,#0a0c0f)}
+.mapbox:has(.fig.globe){background:var(--space)}
+.sea{fill:var(--sea)}
+.globe .sea{fill:url(#gOcean);filter:drop-shadow(0 0 14px color-mix(in srgb,var(--sea) 70%,transparent))}
+.grat{fill:none;stroke:var(--ink);stroke-opacity:.07;stroke-width:.5;pointer-events:none}
+.shade{fill:url(#gShade);pointer-events:none}
+.zoom .mode{font:600 14px "IBM Plex Sans",sans-serif}
