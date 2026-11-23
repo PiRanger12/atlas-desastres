@@ -9,6 +9,7 @@ Mapa mundial interactivo para explorar los desastres más significativos de la h
 - Cada desastre es un punto en el mapa; su tamaño es proporcional a la raíz cuadrada de las muertes estimadas.
 - Filtros por tipo: terremoto, tsunami, volcán, ciclón/huracán, inundación, sequía/hambruna, calor/incendio y otros.
 - Orden por año o por mortalidad.
+- Capa opcional **Mareogramas NOAA**: carga en vivo las estaciones mareográficas de la [API Hazel de NOAA/NCEI](https://www.ngdc.noaa.gov/hazel/view/swagger#/Tsunami%20Marigrams) (`/tsunamis/marigrams`, paginada de 200 en 200). Al hacer clic en una estación se listan sus mareogramas con la imagen escaneada, enlaces de descarga (ZIP, CSV, NetCDF) y los datos del tsunami (`/tsunamis/events/{id}`). Los resultados se guardan en `sessionStorage`. El cliente está en `js/noaa.js`.
 - Diseño responsivo y con modo oscuro automático.
 
 ## Tecnologías

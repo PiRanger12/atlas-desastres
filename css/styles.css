@@ -52,3 +52,23 @@ footer{max-width:1440px;margin:auto;padding:0 max(4vw,16px) 32px;font-size:13px;
 @media(max-width:900px){main{grid-template-columns:minmax(0,1fr)}aside{max-height:none}ol{max-height:70vh}.fig{height:56vh}}
 @media(max-width:600px){.fig{height:46vh;min-height:300px}.ph h2{font-size:22px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Capa de mareogramas NOAA */
+.st{stroke:var(--edge);stroke-width:.8;fill-opacity:.85;cursor:pointer}
+.st:hover,.st.pick{fill-opacity:1;stroke:var(--ink);stroke-width:1.6}
+.chip.layer{border-style:dashed}.chip.layer[aria-pressed=true]{border-style:solid;opacity:1}
+.chip i.tri{border-radius:0;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.mg{margin-top:8px;font-size:14px}
+.mg img{display:block;width:100%;height:auto;border-radius:6px;border:1px solid var(--rule);background:#fff;margin-bottom:8px}
+.mg .ev{color:var(--ink);margin-bottom:8px}.mg .cm{color:var(--mute)}
+.links{display:flex;flex-wrap:wrap;gap:6px 14px}
+.links a,footer a{color:var(--acc)}
+
+/* Globo 3D */
+:root{--sead:light-dark(#b9c4cd,#0f151a);--space:light-dark(#e9ebee,#0a0c0f)}
+.mapbox:has(.fig.globe){background:var(--space)}
+.sea{fill:var(--sea)}
+.globe .sea{fill:url(#gOcean);filter:drop-shadow(0 0 14px color-mix(in srgb,var(--sea) 70%,transparent))}
+.grat{fill:none;stroke:var(--ink);stroke-opacity:.07;stroke-width:.5;pointer-events:none}
+.shade{fill:url(#gShade);pointer-events:none}
+.zoom .mode{font:600 14px "IBM Plex Sans",sans-serif}
