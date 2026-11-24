@@ -30,7 +30,8 @@ Mapa mundial interactivo para explorar los desastres más significativos de la h
 ├── js/meteo.js               # cliente de Open-Meteo (clima histórico)
 ├── data/desastres.json       # catálogo de desastres
 ├── data/paises.topo.json     # países con nombre en español y región asignada
-└── scripts/build-geo.js      # genera paises.topo.json
+├── scripts/build-geo.js      # genera paises.topo.json
+└── tests/                    # pruebas (npm test)
 ```
 
 ## Cómo ejecutarlo
@@ -51,6 +52,23 @@ Para regenerar la geometría:
 npm install
 npm run build:geo
 ```
+
+## Pruebas
+
+Las pruebas usan el runner nativo de Node (`node:test`), sin dependencias extra. Requiere Node 22 o superior.
+
+```bash
+npm test
+```
+
+| Archivo | Qué valida |
+|---|---|
+| `tests/datos.test.mjs` | `desastres.json`: campos y tipos, regiones y tipos válidos, coordenadas, fechas reales y coherentes con `anio`, que los eventos desde 1940 tengan `fecha`; `paises.topo.json`: cada país con nombre y región |
+| `tests/meteo.test.mjs` | Cliente de Open-Meteo: ventana de días (cambio de mes, de año y bisiestos), URL de la API, conversión de la respuesta, caché, peticiones simultáneas y reintento tras error |
+| `tests/noaa.test.mjs` | Cliente de NOAA: paginación de mareogramas, filtro de registros sin coordenadas, caché y manejo de errores |
+| `tests/pagina.test.mjs` | `index.html`: archivos locales existentes, orden de los scripts, versiones fijas en el CDN, sintaxis de `js/` y créditos de las fuentes |
+
+Las APIs no se llaman de verdad: `fetch` y `sessionStorage` se reemplazan por versiones falsas y los scripts de `js/` se ejecutan en un contexto aislado (`node:vm`), igual que en el navegador. El workflow `.github/workflows/pruebas.yml` corre `npm test` en cada push y PR a `main` y `dev`.
 
 ## Datos
 

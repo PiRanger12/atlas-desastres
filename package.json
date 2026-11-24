@@ -4,6 +4,7 @@
   "description": "Mapa mundial interactivo de desastres históricos por región",
   "private": true,
   "scripts": {
+    "test": "node --test \"tests/**/*.test.mjs\"",
     "build:geo": "node scripts/build-geo.js",
     "start": "npx --yes serve ."
   },
@@ -11,5 +12,8 @@
     "world-atlas": "^2.0.2",
     "world-countries": "^5.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  }
 }
