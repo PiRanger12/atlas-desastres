@@ -1,0 +1,19 @@
+name: Redirigir PR a dev
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, reopened]
+jobs:
+  redirigir:
+    if: github.event.pull_request.user.login != 'PiRanger12'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - run: |
+          gh pr edit "$PR" --base dev
+          gh pr comment "$PR" --body "Los PR deben ir a \`dev\`. Lo cambié automáticamente."
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
