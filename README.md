@@ -10,6 +10,7 @@ Mapa mundial interactivo para explorar los desastres más significativos de la h
 - Filtros por tipo: terremoto, tsunami, volcán, ciclón/huracán, inundación, sequía/hambruna, calor/incendio y otros.
 - Orden por año o por mortalidad.
 - Capa opcional **Mareogramas NOAA**: carga en vivo las estaciones mareográficas de la [API Hazel de NOAA/NCEI](https://www.ngdc.noaa.gov/hazel/view/swagger#/Tsunami%20Marigrams) (`/tsunamis/marigrams`, paginada de 200 en 200). Al hacer clic en una estación se listan sus mareogramas con la imagen escaneada, enlaces de descarga (ZIP, CSV, NetCDF) y los datos del tsunami (`/tsunamis/events/{id}`). Los resultados se guardan en `sessionStorage`. El cliente está en `js/noaa.js`.
+- **Clima histórico del evento**: al abrir un desastre de 1940 en adelante se muestran mini gráficas diarias de temperatura (máx./mín.), lluvia y ráfagas de viento en el lugar, de 7 días antes a 3 días después (o del periodo completo si el evento duró semanas), con el día del evento resaltado. Los datos vienen de la [API de clima histórico de Open-Meteo](https://open-meteo.com/en/docs/historical-weather-api) (`/v1/archive`, reanálisis ERA5 de ~25 km, sin API key) y se guardan en `sessionStorage`. El cliente está en `js/meteo.js`.
 - Diseño responsivo y con modo oscuro automático.
 
 ## Tecnologías
@@ -25,6 +26,8 @@ Mapa mundial interactivo para explorar los desastres más significativos de la h
 ├── index.html
 ├── css/styles.css
 ├── js/app.js                 # lógica del mapa, filtros y panel
+├── js/noaa.js                # cliente de la API Hazel (mareogramas)
+├── js/meteo.js               # cliente de Open-Meteo (clima histórico)
 ├── data/desastres.json       # catálogo de desastres
 ├── data/paises.topo.json     # países con nombre en español y región asignada
 └── scripts/build-geo.js      # genera paises.topo.json
@@ -57,6 +60,7 @@ Cada registro de `data/desastres.json` tiene este formato:
 {
   "region": "meso",
   "anio": 1985,
+  "fecha": "1985-09-19",
   "tipo": "sismo",
   "nombre": "Terremoto de Ciudad de México",
   "lugar": "CDMX, México",
@@ -69,6 +73,10 @@ Cada registro de `data/desastres.json` tiene este formato:
 ```
 
 `muertes` es una estimación central que se usa para el tamaño del punto y el orden; `muertes_texto` es lo que se muestra.
+
+`fecha` (AAAA-MM-DD, opcional) es el día exacto del evento y activa el clima histórico. Para eventos que duraron semanas (olas de calor, sequías, temporadas de incendios) se agrega `fecha_fin` y se muestra todo el periodo.
+
+> ERA5 promedia celdas de ~25 km: los extremos locales salen suavizados, sobre todo el viento y la lluvia de ciclones. Sirve para ver el contexto del evento, no para reemplazar las mediciones de estaciones.
 
 > Las cifras son aproximadas y, en eventos antiguos, las estimaciones varían mucho. Pendiente: verificarlas contra fuentes como [EM-DAT](https://www.emdat.be/) y [NOAA NCEI](https://www.ngdc.noaa.gov/hazard/).
 

@@ -26,6 +26,7 @@
   {
     "region": "norte",
     "anio": 2005,
+    "fecha": "2005-08-29",
     "tipo": "ciclon",
     "nombre": "Huracán Katrina",
     "lugar": "Luisiana, EE. UU.",
@@ -38,6 +39,7 @@
   {
     "region": "norte",
     "anio": 1964,
+    "fecha": "1964-03-27",
     "tipo": "sismo",
     "nombre": "Terremoto de Alaska",
     "lugar": "Alaska, EE. UU.",
@@ -50,6 +52,7 @@
   {
     "region": "norte",
     "anio": 1980,
+    "fecha": "1980-05-18",
     "tipo": "volcan",
     "nombre": "Erupción del monte Santa Helena",
     "lugar": "Washington, EE. UU.",
@@ -74,6 +77,7 @@
   {
     "region": "meso",
     "anio": 2010,
+    "fecha": "2010-01-12",
     "tipo": "sismo",
     "nombre": "Terremoto de Haití",
     "lugar": "Puerto Príncipe, Haití",
@@ -86,6 +90,7 @@
   {
     "region": "meso",
     "anio": 1985,
+    "fecha": "1985-09-19",
     "tipo": "sismo",
     "nombre": "Terremoto de Ciudad de México",
     "lugar": "CDMX, México",
@@ -98,6 +103,7 @@
   {
     "region": "meso",
     "anio": 1998,
+    "fecha": "1998-10-29",
     "tipo": "ciclon",
     "nombre": "Huracán Mitch",
     "lugar": "Honduras y Nicaragua",
@@ -122,6 +128,7 @@
   {
     "region": "meso",
     "anio": 1972,
+    "fecha": "1972-12-23",
     "tipo": "sismo",
     "nombre": "Terremoto de Managua",
     "lugar": "Nicaragua",
@@ -134,6 +141,7 @@
   {
     "region": "meso",
     "anio": 1982,
+    "fecha": "1982-03-28",
     "tipo": "volcan",
     "nombre": "Erupción de El Chichón",
     "lugar": "Chiapas, México",
@@ -146,6 +154,7 @@
   {
     "region": "meso",
     "anio": 2017,
+    "fecha": "2017-09-20",
     "tipo": "ciclon",
     "nombre": "Huracán María",
     "lugar": "Puerto Rico",
@@ -158,6 +167,7 @@
   {
     "region": "sudamerica",
     "anio": 1960,
+    "fecha": "1960-05-22",
     "tipo": "sismo",
     "nombre": "Terremoto de Valdivia",
     "lugar": "Chile",
@@ -170,6 +180,7 @@
   {
     "region": "sudamerica",
     "anio": 1985,
+    "fecha": "1985-11-13",
     "tipo": "volcan",
     "nombre": "Tragedia de Armero",
     "lugar": "Tolima, Colombia",
@@ -182,6 +193,7 @@
   {
     "region": "sudamerica",
     "anio": 1970,
+    "fecha": "1970-05-31",
     "tipo": "sismo",
     "nombre": "Terremoto de Áncash",
     "lugar": "Perú",
@@ -194,6 +206,7 @@
   {
     "region": "sudamerica",
     "anio": 1999,
+    "fecha": "1999-12-15",
     "tipo": "inundacion",
     "nombre": "Tragedia de Vargas",
     "lugar": "Venezuela",
@@ -206,6 +219,7 @@
   {
     "region": "sudamerica",
     "anio": 2010,
+    "fecha": "2010-02-27",
     "tipo": "sismo",
     "nombre": "Terremoto y tsunami de Chile",
     "lugar": "Maule, Chile",
@@ -254,6 +268,7 @@
   {
     "region": "europa",
     "anio": 1953,
+    "fecha": "1953-01-31",
     "tipo": "inundacion",
     "nombre": "Inundación del Mar del Norte",
     "lugar": "Países Bajos",
@@ -266,6 +281,8 @@
   {
     "region": "europa",
     "anio": 2003,
+    "fecha": "2003-08-01",
+    "fecha_fin": "2003-08-20",
     "tipo": "calor",
     "nombre": "Ola de calor europea",
     "lugar": "Francia y Europa occidental",
@@ -278,6 +295,7 @@
   {
     "region": "europa",
     "anio": 1986,
+    "fecha": "1986-04-26",
     "tipo": "otro",
     "nombre": "Accidente de Chernóbil",
     "lugar": "Ucrania",
@@ -290,6 +308,8 @@
   {
     "region": "africa",
     "anio": 1984,
+    "fecha": "1984-06-01",
+    "fecha_fin": "1984-09-30",
     "tipo": "sequia",
     "nombre": "Hambruna de Etiopía",
     "lugar": "Etiopía",
@@ -302,6 +322,7 @@
   {
     "region": "africa",
     "anio": 1986,
+    "fecha": "1986-08-21",
     "tipo": "otro",
     "nombre": "Desastre del lago Nyos",
     "lugar": "Camerún",
@@ -314,6 +335,7 @@
   {
     "region": "africa",
     "anio": 1960,
+    "fecha": "1960-02-29",
     "tipo": "sismo",
     "nombre": "Terremoto de Agadir",
     "lugar": "Marruecos",
@@ -326,6 +348,7 @@
   {
     "region": "africa",
     "anio": 2019,
+    "fecha": "2019-03-14",
     "tipo": "ciclon",
     "nombre": "Ciclón Idai",
     "lugar": "Mozambique, Zimbabue, Malaui",
@@ -338,6 +361,7 @@
   {
     "region": "africa",
     "anio": 2023,
+    "fecha": "2023-09-10",
     "tipo": "inundacion",
     "nombre": "Inundaciones de Derna",
     "lugar": "Libia",
@@ -350,6 +374,7 @@
   {
     "region": "africa",
     "anio": 2023,
+    "fecha": "2023-09-08",
     "tipo": "sismo",
     "nombre": "Terremoto de Marruecos",
     "lugar": "Alto Atlas, Marruecos",
@@ -374,6 +399,7 @@
   {
     "region": "medio",
     "anio": 2023,
+    "fecha": "2023-02-06",
     "tipo": "sismo",
     "nombre": "Terremotos de Turquía y Siria",
     "lugar": "Kahramanmaraş",
@@ -386,6 +412,7 @@
   {
     "region": "medio",
     "anio": 2003,
+    "fecha": "2003-12-26",
     "tipo": "sismo",
     "nombre": "Terremoto de Bam",
     "lugar": "Irán",
@@ -398,6 +425,7 @@
   {
     "region": "medio",
     "anio": 1999,
+    "fecha": "1999-08-17",
     "tipo": "sismo",
     "nombre": "Terremoto de Izmit",
     "lugar": "Turquía",
@@ -410,6 +438,7 @@
   {
     "region": "rusia",
     "anio": 1948,
+    "fecha": "1948-10-06",
     "tipo": "sismo",
     "nombre": "Terremoto de Asjabad",
     "lugar": "Turkmenistán",
@@ -422,6 +451,7 @@
   {
     "region": "rusia",
     "anio": 1988,
+    "fecha": "1988-12-07",
     "tipo": "sismo",
     "nombre": "Terremoto de Spitak",
     "lugar": "Armenia",
@@ -446,6 +476,8 @@
   {
     "region": "rusia",
     "anio": 2010,
+    "fecha": "2010-07-20",
+    "fecha_fin": "2010-08-15",
     "tipo": "calor",
     "nombre": "Ola de calor e incendios de Rusia",
     "lugar": "Rusia occidental",
@@ -458,6 +490,7 @@
   {
     "region": "sur",
     "anio": 1970,
+    "fecha": "1970-11-12",
     "tipo": "ciclon",
     "nombre": "Ciclón Bhola",
     "lugar": "Bangladés",
@@ -470,6 +503,7 @@
   {
     "region": "sur",
     "anio": 2004,
+    "fecha": "2004-12-26",
     "tipo": "tsunami",
     "nombre": "Tsunami del océano Índico",
     "lugar": "Sumatra, Sri Lanka, India, Tailandia",
@@ -482,6 +516,7 @@
   {
     "region": "sur",
     "anio": 2005,
+    "fecha": "2005-10-08",
     "tipo": "sismo",
     "nombre": "Terremoto de Cachemira",
     "lugar": "Pakistán",
@@ -494,6 +529,7 @@
   {
     "region": "sur",
     "anio": 2015,
+    "fecha": "2015-04-25",
     "tipo": "sismo",
     "nombre": "Terremoto de Nepal",
     "lugar": "Gorja, Nepal",
@@ -506,6 +542,7 @@
   {
     "region": "sur",
     "anio": 2001,
+    "fecha": "2001-01-26",
     "tipo": "sismo",
     "nombre": "Terremoto de Gujarat",
     "lugar": "India",
@@ -518,6 +555,8 @@
   {
     "region": "sur",
     "anio": 2022,
+    "fecha": "2022-08-10",
+    "fecha_fin": "2022-09-05",
     "tipo": "inundacion",
     "nombre": "Inundaciones de Pakistán",
     "lugar": "Sindh y Baluchistán",
@@ -554,6 +593,7 @@
   {
     "region": "oriental",
     "anio": 1976,
+    "fecha": "1976-07-28",
     "tipo": "sismo",
     "nombre": "Terremoto de Tangshan",
     "lugar": "China",
@@ -578,6 +618,7 @@
   {
     "region": "oriental",
     "anio": 2011,
+    "fecha": "2011-03-11",
     "tipo": "tsunami",
     "nombre": "Terremoto y tsunami de Tōhoku",
     "lugar": "Japón",
@@ -590,6 +631,7 @@
   {
     "region": "oriental",
     "anio": 2008,
+    "fecha": "2008-05-12",
     "tipo": "sismo",
     "nombre": "Terremoto de Sichuan",
     "lugar": "China",
@@ -626,6 +668,7 @@
   {
     "region": "sudeste",
     "anio": 2008,
+    "fecha": "2008-05-02",
     "tipo": "ciclon",
     "nombre": "Ciclón Nargis",
     "lugar": "Delta del Irrawaddy, Birmania",
@@ -638,6 +681,7 @@
   {
     "region": "sudeste",
     "anio": 2013,
+    "fecha": "2013-11-08",
     "tipo": "ciclon",
     "nombre": "Tifón Haiyan (Yolanda)",
     "lugar": "Filipinas",
@@ -650,6 +694,7 @@
   {
     "region": "sudeste",
     "anio": 1991,
+    "fecha": "1991-06-15",
     "tipo": "volcan",
     "nombre": "Erupción del Pinatubo",
     "lugar": "Luzón, Filipinas",
@@ -662,6 +707,7 @@
   {
     "region": "oceania",
     "anio": 2011,
+    "fecha": "2011-02-22",
     "tipo": "sismo",
     "nombre": "Terremoto de Christchurch",
     "lugar": "Nueva Zelanda",
@@ -674,6 +720,7 @@
   {
     "region": "oceania",
     "anio": 2009,
+    "fecha": "2009-02-07",
     "tipo": "calor",
     "nombre": "Sábado Negro",
     "lugar": "Victoria, Australia",
@@ -686,6 +733,8 @@
   {
     "region": "oceania",
     "anio": 2020,
+    "fecha": "2019-12-20",
+    "fecha_fin": "2020-01-10",
     "tipo": "calor",
     "nombre": "Temporada de incendios 2019–20",
     "lugar": "Australia oriental",
@@ -698,6 +747,7 @@
   {
     "region": "oceania",
     "anio": 1974,
+    "fecha": "1974-12-25",
     "tipo": "ciclon",
     "nombre": "Ciclón Tracy",
     "lugar": "Darwin, Australia",
@@ -710,6 +760,7 @@
   {
     "region": "oceania",
     "anio": 1998,
+    "fecha": "1998-07-17",
     "tipo": "tsunami",
     "nombre": "Tsunami de Aitape",
     "lugar": "Papúa Nueva Guinea",
@@ -722,6 +773,7 @@
   {
     "region": "oceania",
     "anio": 2022,
+    "fecha": "2022-01-15",
     "tipo": "volcan",
     "nombre": "Erupción del Hunga Tonga",
     "lugar": "Tonga",

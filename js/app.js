@@ -4,7 +4,7 @@ const [TOPO,RAW]=await Promise.all([
   fetch('data/paises.topo.json').then(r=>r.json()),
   fetch('data/desastres.json').then(r=>r.json())
 ]);
-const D=RAW.map((r,i)=>({id:i,r:r.region,y:r.anio,t:r.tipo,n:r.nombre,p:r.lugar,lat:r.lat,lon:r.lon,m:r.muertes,d:r.muertes_texto,x:r.descripcion}));
+const D=RAW.map((r,i)=>({id:i,r:r.region,y:r.anio,t:r.tipo,n:r.nombre,p:r.lugar,lat:r.lat,lon:r.lon,m:r.muertes,d:r.muertes_texto,x:r.descripcion,f:r.fecha,ff:r.fecha_fin}));
 const REG={norte:"Norteamérica",meso:"México, Centroamérica y Caribe",sudamerica:"Sudamérica",europa:"Europa",africa:"África",medio:"Medio Oriente",rusia:"Rusia, Cáucaso y Asia Central",sur:"Asia del Sur",oriental:"Asia Oriental",sudeste:"Sudeste Asiático",oceania:"Oceanía"};
 const TYPES={sismo:["Terremoto","#c0392b"],tsunami:["Tsunami","#1f6fb2"],volcan:["Volcán","#e07b00"],ciclon:["Ciclón / huracán","#7b4fb5"],inundacion:["Inundación","#1a9a8b"],sequia:["Sequía / hambruna","#9a7b2f"],calor:["Calor / incendio","#d6457a"],otro:["Otros","#5b6570"]};
 
@@ -163,15 +163,75 @@ function renderPanel(scroll){
   ph.innerHTML=`<h2>${REG[st.reg]}</h2><p>${items.length} eventos · ~${fmt(tot)} muertes estimadas en total</p>
    <div class="sort"><button data-s="y" aria-pressed="${st.sort==='y'}">Por año</button><button data-s="m" aria-pressed="${st.sort==='m'}">Por mortalidad</button><button data-s="x" aria-pressed="false">← Regiones</button></div>`;
   list.innerHTML=items.length?items.map(d=>`<li data-id="${d.id}" style="--t:${TYPES[d.t][1]}" class="${d.id===st.pick?'pick':''}">
-    <h3>${d.n}</h3><div class="meta"><span>${yr(d.y)}</span><span>${TYPES[d.t][0]}</span><span>${d.p}</span><b>${/\d/.test(d.d)?d.d+' muertes':d.d}</b></div><p>${d.x}</p></li>`).join('')
+    <h3>${d.n}</h3><div class="meta"><span>${d.f?fechaEv(d):yr(d.y)}</span><span>${TYPES[d.t][0]}</span><span>${d.p}</span><b>${/\d/.test(d.d)?d.d+' muertes':d.d}</b></div><p>${d.x}</p>${d.id===st.pick?wxHTML(d):''}</li>`).join('')
    :'<div class="empty">No hay eventos con los filtros activos en esta región.</div>';
+  const pk=items.find(d=>d.id===st.pick);if(pk)cargarClima(pk);
   if(scroll){const el=list.querySelector('.pick');el&&el.scrollIntoView({block:'nearest',behavior:'smooth'})}
+}
+// ---- Clima histórico del evento (Open-Meteo, reanálisis ERA5) ----
+const iso2=f=>{const [y,m,d]=f.split('-');return {y:+y,m:+m,d:+d}};
+const corta=f=>{const t=iso2(f);return `${t.d} ${MES[t.m-1]}`};
+const larga=f=>{const t=iso2(f);return `${t.d} ${MES[t.m-1]} ${t.y}`};
+function fechaEv(d){if(!d.ff)return larga(d.f);const a=iso2(d.f),b=iso2(d.ff);
+  return a.y===b.y?`${corta(d.f)} – ${larga(d.ff)}`:`${larga(d.f)} – ${larga(d.ff)}`}
+const evM=d=>({fecha:d.f,fecha_fin:d.ff,lat:d.lat,lon:d.lon});
+const enEvento=(d,f)=>d.ff?f>=d.f&&f<=d.ff:f===d.f;
+const n1=v=>v==null?'–':(Math.round(v*10)/10).toLocaleString('es-MX');
+const n0=v=>v==null?'–':Math.round(v).toLocaleString('es-MX');
+const WX=[ // [clave, etiqueta, unidad, color]
+  ['temp','Temperatura','°C','#d9622b'],['lluvia','Lluvia','mm','#1f6fb2'],['rafaga','Ráfagas','km/h','#7b4fb5']];
+function wxHTML(d){
+  if(!METEO.disponible(evM(d)))return `<div class="wx none">Sin datos meteorológicos: ${d.y<METEO.DESDE?`el reanálisis ERA5 empieza en ${METEO.DESDE}.`:'el evento no tiene fecha exacta.'}</div>`;
+  const [a,b]=METEO.ventana(evM(d));
+  return `<div class="wx" id="wx${d.id}"><div class="wxh"><b>Clima en la zona</b><span>${larga(a)} – ${larga(b)}</span></div>
+    ${WX.map(([k,n])=>`<div class="wxr"><span class="wxl">${n}</span><svg class="wxs" data-k="${k}" aria-label="${n} diaria"></svg><span class="wxv" data-v="${k}"></span></div>`).join('')}
+    <div class="wxx"><span>${corta(a)}</span><span class="ev">${d.ff?'Periodo del evento':'Día del evento'}</span><span>${corta(b)}</span></div>
+    <div class="wxt">Cargando datos de Open-Meteo…</div></div>`;
+}
+let wxRO=null,wxDatos=null;
+function cargarClima(d){
+  if(wxRO){wxRO.disconnect();wxRO=null}
+  if(!METEO.disponible(evM(d)))return;
+  METEO.diario(evM(d)).then(r=>{const el=document.getElementById('wx'+d.id);if(!el)return;
+    wxDatos={d,r};dibujarClima(el);
+    wxRO=new ResizeObserver(()=>{const e=document.getElementById('wx'+d.id);if(e)dibujarClima(e)});wxRO.observe(el);
+    const ev=r.dias.filter(x=>enEvento(d,x.fecha)),max=(a,k)=>a.reduce((m,x)=>x[k]!=null&&(m==null||x[k]>m[k])?x:m,null);
+    const tot=ev.reduce((s,x)=>s+(x.lluvia||0),0),hot=max(ev,'tmax'),gust=max(ev,'rafaga');
+    el.querySelector('.wxt').innerHTML=(d.ff
+      ?`<b>En el periodo:</b> máx. ${n1(hot&&hot.tmax)} °C (${hot?corta(hot.fecha):'–'}) · lluvia total ${n0(tot)} mm · ráfaga máx. ${n0(gust&&gust.rafaga)} km/h`
+      :ev[0]?`<b>El día del evento:</b> ${n1(ev[0].tmin)}–${n1(ev[0].tmax)} °C · lluvia ${n1(ev[0].lluvia)} mm · ráfagas ${n0(ev[0].rafaga)} km/h`:'')
+      +`<span class="cm">Reanálisis ERA5 en una celda de ~25 km (${n1(r.lat)}°, ${n1(r.lon)}°): suaviza los extremos locales, así que la lluvia y el viento de ciclones y tormentas suelen salir por debajo de lo medido en el sitio. Datos: <a href="${METEO.pagina}" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0).</span>`;
+  }).catch(e=>{console.error(e);const el=document.getElementById('wx'+d.id);if(el)el.querySelector('.wxt').textContent='No se pudieron cargar los datos meteorológicos. Cierra y vuelve a abrir el evento para reintentar.'});
+}
+function dibujarClima(el){
+  const {d,r}=wxDatos,dias=r.dias,n=dias.length;
+  for(const s of el.querySelectorAll('svg.wxs')){
+    const k=s.dataset.k,W=s.clientWidth,H=s.clientHeight;if(!W)continue;
+    const bw=W/n,px=i=>i*bw,col=WX.find(w=>w[0]===k)[3];
+    let marks='',vals;
+    const sombra=dias.map((x,i)=>enEvento(d,x.fecha)?`<rect x="${px(i)}" y="0" width="${bw}" height="${H}" class="wxe"/>`:'').join('');
+    if(k==='temp'){
+      vals=dias.flatMap(x=>[x.tmin,x.tmax]).filter(v=>v!=null);
+      const lo=Math.min(...vals),hi=Math.max(...vals),pad=Math.max(1,(hi-lo)*.15),y=v=>H-2-(v-lo+pad)/(hi-lo+2*pad)*(H-4);
+      const ok=dias.map((x,i)=>[x,i]).filter(([x])=>x.tmin!=null&&x.tmax!=null);
+      const area=ok.map(([x,i])=>`${px(i)+bw/2},${y(x.tmax)}`).join(' ')+' '+ok.slice().reverse().map(([x,i])=>`${px(i)+bw/2},${y(x.tmin)}`).join(' ');
+      marks=`<polygon points="${area}" fill="${col}" fill-opacity=".25"/><polyline points="${ok.map(([x,i])=>`${px(i)+bw/2},${y(x.tmax)}`).join(' ')}" fill="none" stroke="${col}" stroke-width="1.8"/>`
+        +`<polyline points="${ok.map(([x,i])=>`${px(i)+bw/2},${y(x.tmin)}`).join(' ')}" fill="none" stroke="${col}" stroke-width="1" stroke-opacity=".7"/>`;
+      el.querySelector('[data-v=temp]').textContent=vals.length?`${n0(lo)}–${n0(hi)} °C`:'–';
+    }else{
+      vals=dias.map(x=>x[k]);const hi=Math.max(1,...vals.filter(v=>v!=null));
+      marks=vals.map((v,i)=>v?`<rect x="${px(i)+bw*.15}" y="${H-v/hi*H}" width="${Math.max(1,bw*.7)}" height="${v/hi*H}" fill="${col}" rx="1"/>`:'').join('');
+      el.querySelector(`[data-v=${k}]`).textContent=`máx. ${n0(Math.max(...vals.filter(v=>v!=null),0))} ${k==='lluvia'?'mm':'km/h'}`;
+    }
+    const hits=dias.map((x,i)=>`<rect x="${px(i)}" y="0" width="${bw}" height="${H}" fill="transparent"><title>${larga(x.fecha)}: ${n1(x.tmin)}–${n1(x.tmax)} °C · ${n1(x.lluvia)} mm · ráfagas ${n0(x.rafaga)} km/h</title></rect>`).join('');
+    s.innerHTML=sombra+marks+hits;
+  }
 }
 ph.onclick=e=>{const b=e.target.closest('[data-s]');if(!b)return;
   if(b.dataset.s==='b'){st.station=null;st.mpick=null;renderStations();renderPanel();return}
   if(b.dataset.s==='x'){st.reg=null;st.pick=null;cs.classed('on',false);renderDots();renderPanel();return}
   st.sort=b.dataset.s;renderPanel()};
-list.onclick=e=>{if(e.target.closest('a'))return;
+list.onclick=e=>{if(e.target.closest('a,.wx'))return;
   const mi=e.target.closest('li[data-mid]');if(mi){const id=+mi.dataset.mid;st.mpick=st.mpick===id?null:id;renderPanel();return}
   const r=e.target.closest('[data-r]');if(r){select(r.dataset.r,false,true);return}
   const li=e.target.closest('li[data-id]');if(!li)return;const id=+li.dataset.id;st.pick=st.pick===id?null:id;renderDots();renderPanel()};

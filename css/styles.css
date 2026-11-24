@@ -72,3 +72,19 @@ footer{max-width:1440px;margin:auto;padding:0 max(4vw,16px) 32px;font-size:13px;
 .grat{fill:none;stroke:var(--ink);stroke-opacity:.07;stroke-width:.5;pointer-events:none}
 .shade{fill:url(#gShade);pointer-events:none}
 .zoom .mode{font:600 14px "IBM Plex Sans",sans-serif}
+
+/* Clima histórico del evento (Open-Meteo / ERA5) */
+.wx{margin-top:10px;padding:10px 12px;border-radius:8px;background:var(--card);border:1px solid var(--rule);font-size:13px;cursor:default}
+.wx.none{color:var(--mute)}
+.wxh{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;margin-bottom:6px}
+.wxh span{color:var(--mute)}
+.wxr{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"l v" "s s";column-gap:8px;margin:6px 0 2px}
+.wxl{grid-area:l;color:var(--mute)}
+.wxv{grid-area:v;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+svg.wxs{grid-area:s;width:100%;height:34px;display:block}
+.wxe{fill:var(--acc);fill-opacity:.12}
+.wxx{display:flex;justify-content:space-between;gap:8px;margin-top:2px;color:var(--mute);font-size:12px;white-space:nowrap}
+.wxx .ev{color:var(--acc)}
+.wxt{margin-top:8px;line-height:1.45}
+.wxt .cm{display:block;margin-top:6px;color:var(--mute);font-size:12px}
+.wxt a{color:inherit}
